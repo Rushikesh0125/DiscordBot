@@ -22,13 +22,15 @@ module.exports = {
           { name: "Polygon Mumbai", value: "mumbai" },
           { name: "Ethereum sepolia", value: "sepolia" },
           { name: "Avalanche Fuji", value: "fuji" },
-          { name: "Binance smart chain", value: "bscTestnet" }
+          { name: "Binance smart chain", value: "bscTestnet" },
+          { name: "Arbitrum sepolia", value: "arbSepolia" }
         )
         .setRequired(true)
     ),
   async execute(interaction) {
     const userAddress = interaction.options.getString("address");
     const chain = interaction.options.getString("network");
+
     if (
       userAddress == "0x000000000000000000000000000000000000000" ||
       userAddress == "0x000000000000000000000000000000000000dEaD"
@@ -46,9 +48,9 @@ module.exports = {
     ];
     const provider = new ethers.JsonRpcProvider(await getProviderURL(chain));
     const signer = new ethers.Wallet(process.env.PK, provider);
-    const budsAddress = "0x4E6708Ba3Effdb8bB5aE2852EE446feB1f2eEaac";
+    const budsAddress = "0x8eC815140076BFE21B908E950D9babcC7CA910d7";
     const contract = new ethers.Contract(budsAddress, abi, signer);
-    const canClaim = await preCheckDrip(contract, userAddress, provider);
+    const canClaim = await preCheckDrip(contract, userAddress, provider, chain);
     if (canClaim != 0) {
       await interaction.reply(
         `You can't claim it now, try again after ${canClaim} hours`
